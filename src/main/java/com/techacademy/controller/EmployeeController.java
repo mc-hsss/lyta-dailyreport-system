@@ -125,13 +125,6 @@ public class EmployeeController {
     @PostMapping("/{code}/update")
     public String update(@PathVariable("code") String code, @Validated @ModelAttribute Employee employee, BindingResult res, Model model) {
 
-        // パスワード空白チェック
-        if ("".equals(employee.getPassword())) {
-            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
-                    ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
-            return "employees/update";
-        }
-
         // 入力チェック
         if (res.hasErrors()) {
             return "employees/update";
