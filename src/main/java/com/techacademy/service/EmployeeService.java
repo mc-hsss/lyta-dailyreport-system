@@ -142,4 +142,14 @@ public class EmployeeService {
         return passwordLength < 8 || 16 < passwordLength;
     }
 
+    // ログイン者のユーザー情報を取得
+    public Employee getLoginEmployee(Employee loginUser) {
+        return findByCode(loginUser.getCode());
+    }
+
+    // ログイン者が管理者権限か一般ユーザーかを判定
+    public boolean isAdmin(Employee employee) {
+        return employee.getRole() == Employee.Role.ADMIN;
+    }
+
 }
