@@ -9,7 +9,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -42,8 +41,8 @@ public class EmployeeController {
     }
 
     // 従業員詳細画面
-    @GetMapping(value = "/{code}/")
-    public String detail(@PathVariable("code") String code, Model model) {
+    @GetMapping("/{code}/")
+    public String detail(String code, Model model) {
 
         model.addAttribute("employee", employeeService.findByCode(code));
         return "employees/detail";
@@ -100,7 +99,7 @@ public class EmployeeController {
 
     // 従業員削除処理
     @PostMapping(value = "/{code}/delete")
-    public String delete(@PathVariable("code") String code, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+    public String delete(String code, @AuthenticationPrincipal UserDetail userDetail, Model model) {
 
         ErrorKinds result = employeeService.delete(code, userDetail);
 
@@ -115,7 +114,7 @@ public class EmployeeController {
 
     // 従業員更新画面
     @GetMapping("/{code}/update")
-    public String displayEdit(@PathVariable("code") String code, Model model) {
+    public String displayEdit(String code, Model model) {
         Employee employee = employeeService.findByCode(code);
         model.addAttribute("employee", employee);
         return "employees/update";
@@ -123,7 +122,7 @@ public class EmployeeController {
 
     // 従業員更新処理
     @PostMapping("/{code}/update")
-    public String update(@PathVariable("code") String code, @Validated @ModelAttribute Employee employee, BindingResult res, Model model) {
+    public String update(String code, @Validated @ModelAttribute Employee employee, BindingResult res, Model model) {
 
         // 入力チェック
         if (res.hasErrors()) {

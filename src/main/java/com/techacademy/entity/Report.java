@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.validator.constraints.Length;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +15,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -29,14 +32,19 @@ public class Report {
 
     // 日付
     @Column(nullable = false)
+    @NotNull
     private LocalDate reportDate;
 
     // タイトル
     @Column(length = 100)
+    @NotEmpty
+    @Length(max = 100)
     private String title;
 
     // 内容
     @Column(columnDefinition="LONGTEXT", nullable= false)
+    @NotEmpty
+    @Length(max = 600)
     private String content;
 
     // 社員番号

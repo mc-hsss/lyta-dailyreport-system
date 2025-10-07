@@ -2,12 +2,17 @@ package com.techacademy.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.techacademy.constants.ErrorKinds;
 import com.techacademy.entity.Employee;
 import com.techacademy.entity.Report;
 import com.techacademy.service.EmployeeService;
@@ -18,6 +23,7 @@ import com.techacademy.service.UserDetail;
 @RequestMapping("reports")
 public class ReportController {
 
+    @Autowired
     private final ReportService reportService;
     private final EmployeeService employeeService;
 
@@ -49,4 +55,37 @@ public class ReportController {
         return "reports/list";
     }
 
+     // 日報新規登録画面の表示
+     @GetMapping(value = "/add")
+        public String create(@AuthenticationPrincipal UserDetail loginUser, Model model) {
+
+         model.addAttribute("report", new Report());      // 入力用の空のReport
+         model.addAttribute("employee", loginUser.getEmployee()); // 表示用
+         return "reports/new";
+     }
+
+     // 日報新規登録処理
+     @PostMapping("/add")
+     public String add(@AuthenticationPrincipal UserDetail loginUser,@Validated Report report, BindingResult res, Model model) {
+
+         // 入力チェック
+         if (res.hasErrors()) {
+             model.addAttribute("employee",loginUser.getEmployee());
+             return "reports/new";
+         }
+
+         // 登録処理を呼び出し
+         Employee employee = loginUser.getEmployee(); // 日報の記述者
+         ErrorKinds result = reportService.save(report, employee);
+
+         // 日付重複チェックエラーの場合
+         if (result == ErrorKinds.DATECHECK_ERROR) {
+             model.addAttribute("dateErrorMsg", "既に登録されている日付です");
+             model.addAttribute("employee", employee);
+             return "reports/new";
+         }
+
+
+         return "redirect:/reports";
+     }
 }
