@@ -85,6 +85,17 @@ public class ReportService {
         //元の従業員情報を取得
         Report dbReport = findById(report.getId());
 
+     // 更新中の日報以外の表示中日報について、日付が被っていないかチェック
+        Optional<Report> existing = reportRepository.findByEmployeeAndReportDateAndIdNot(
+                report.getEmployee(),
+                report.getReportDate(),
+                report.getId()   // 更新中の日報自身を除外
+        );
+
+        if (existing.isPresent()) {
+            return ErrorKinds.DATECHECK_ERROR;
+        }
+
         //更新対象の項目を上書き
         dbReport.setReportDate(report.getReportDate());
         dbReport.setTitle(report.getTitle());

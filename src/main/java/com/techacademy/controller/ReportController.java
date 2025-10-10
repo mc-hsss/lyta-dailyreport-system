@@ -137,6 +137,7 @@ public class ReportController {
              return "reports/update";
          }
 
+
          try {
              ErrorKinds result = reportService.update(report);
              if (ErrorMessage.contains(result)) {
@@ -153,6 +154,8 @@ public class ReportController {
              model.addAttribute("employee", loginUser.getEmployee());
 
              return "reports/update";
+
+
          }
 
          return "redirect:/reports";
