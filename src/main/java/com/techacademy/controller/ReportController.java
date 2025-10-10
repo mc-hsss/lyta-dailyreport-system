@@ -3,12 +3,14 @@ package com.techacademy.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -110,6 +112,47 @@ public class ReportController {
              model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
              model.addAttribute("report", reportService.findById(id));
              return detail(id, model);
+         }
+
+         return "redirect:/reports";
+     }
+
+     // 日報更新画面
+     @GetMapping("/{id}/update")
+     public String displayEdit(@PathVariable("id") Integer id, Model model) {
+         Report report = reportService.findById(id);
+         model.addAttribute("report", report);
+         model.addAttribute("employee",report.getEmployee());
+         return "reports/update";
+     }
+
+     // 日報更新処理
+     @PostMapping("/{id}/update")
+     public String update(@PathVariable("id") int id, @Validated @ModelAttribute Report report, BindingResult res, Model model, @AuthenticationPrincipal UserDetail loginUser) {
+
+         // 入力チェック
+         if (res.hasErrors()) {
+             model.addAttribute("report", report);
+             model.addAttribute("employee", loginUser.getEmployee());
+             return "reports/update";
+         }
+
+         try {
+             ErrorKinds result = reportService.update(report);
+             if (ErrorMessage.contains(result)) {
+                 model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+                 model.addAttribute("report", report);
+                 model.addAttribute("employee", loginUser.getEmployee());
+                 return "reports/update";
+             }
+
+         } catch (DataIntegrityViolationException e) {
+             model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
+             ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
+             model.addAttribute("report", report);
+             model.addAttribute("employee", loginUser.getEmployee());
+
+             return "reports/update";
          }
 
          return "redirect:/reports";

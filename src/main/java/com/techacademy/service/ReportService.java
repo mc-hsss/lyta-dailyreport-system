@@ -78,5 +78,26 @@ public class ReportService {
         Optional<Report> option = reportRepository.findById(id);
         return option.orElse(null);
     }
+    // 日報更新
+    @Transactional
+    public ErrorKinds update(Report report) {
+
+        //元の従業員情報を取得
+        Report dbReport = findById(report.getId());
+
+        //更新対象の項目を上書き
+        dbReport.setReportDate(report.getReportDate());
+        dbReport.setTitle(report.getTitle());
+        dbReport.setContent(report.getContent());
+
+
+        // 更新日時を設定
+        dbReport.setUpdatedAt(LocalDateTime.now());
+
+        //保存
+        reportRepository.save(dbReport);
+
+        return ErrorKinds.SUCCESS;
+    }
 
 }
