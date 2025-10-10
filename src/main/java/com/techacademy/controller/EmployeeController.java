@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -41,8 +42,8 @@ public class EmployeeController {
     }
 
     // 従業員詳細画面
-    @GetMapping("/{code}/")
-    public String detail(String code, Model model) {
+    @GetMapping(value="/{code}/")
+    public String detail(@PathVariable("code") String code, Model model) {
 
         model.addAttribute("employee", employeeService.findByCode(code));
         return "employees/detail";
@@ -99,7 +100,7 @@ public class EmployeeController {
 
     // 従業員削除処理
     @PostMapping(value = "/{code}/delete")
-    public String delete(String code, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+    public String delete(@PathVariable("code") String code, @AuthenticationPrincipal UserDetail userDetail, Model model) {
 
         ErrorKinds result = employeeService.delete(code, userDetail);
 

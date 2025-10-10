@@ -57,6 +57,21 @@ public class ReportService {
         return ErrorKinds.SUCCESS;
     }
 
+    // 日報削除
+    @Transactional
+    public ErrorKinds delete(Integer id, UserDetail userDetail) {
+
+        // 自分を削除しようとした場合はエラーメッセージを表示
+        if (id.equals(userDetail.getEmployee().getCode())) {
+            return ErrorKinds.LOGINCHECK_ERROR;
+        }
+        Report report = findById(id);
+        LocalDateTime now = LocalDateTime.now();
+        report.setUpdatedAt(now);
+        report.setDeleteFlg(true);
+
+        return ErrorKinds.SUCCESS;
+    }
 
     // 1件検索
     public Report findById(Integer id) {

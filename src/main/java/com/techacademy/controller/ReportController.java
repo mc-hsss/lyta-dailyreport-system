@@ -9,10 +9,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.techacademy.constants.ErrorKinds;
+import com.techacademy.constants.ErrorMessage;
 import com.techacademy.entity.Employee;
 import com.techacademy.entity.Report;
 import com.techacademy.service.EmployeeService;
@@ -55,6 +57,16 @@ public class ReportController {
         return "reports/list";
     }
 
+     // 日報詳細画面
+    @GetMapping("/{id}/")
+    public String detail(@PathVariable("id") int id, Model model) {
+        Report report = reportService.findById(id);
+        model.addAttribute("report", report);
+        model.addAttribute("employee", report.getEmployee());
+
+        return "reports/detail";
+    }
+
      // 日報新規登録画面の表示
      @GetMapping(value = "/add")
         public String create(@AuthenticationPrincipal UserDetail loginUser, Model model) {
@@ -88,4 +100,19 @@ public class ReportController {
 
          return "redirect:/reports";
      }
+    // 日報削除処理
+     @PostMapping(value = "/{id}/delete")
+     public String delete(@PathVariable("id") int id, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+
+         ErrorKinds result = reportService.delete(id, userDetail);
+
+         if (ErrorMessage.contains(result)) {
+             model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+             model.addAttribute("report", reportService.findById(id));
+             return detail(id, model);
+         }
+
+         return "redirect:/reports";
+     }
+
 }
