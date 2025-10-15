@@ -94,8 +94,9 @@ public class ReportController {
 
          // 日付重複チェックエラーの場合
          if (result == ErrorKinds.DATECHECK_ERROR) {
-             model.addAttribute("dateErrorMsg", "既に登録されている日付です");
+             model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
              model.addAttribute("employee", employee);
+             model.addAttribute("report",report);
              return "reports/new";
          }
 
@@ -137,6 +138,8 @@ public class ReportController {
              return "reports/update";
          }
 
+         // ログインユーザーを設定
+         report.setEmployee(loginUser.getEmployee());
 
          try {
              ErrorKinds result = reportService.update(report);
